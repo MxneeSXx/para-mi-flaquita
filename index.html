@@ -1,0 +1,235 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Feliz Cumpleaños, Mi Flaquita</title>
+    <style>
+        body {
+            /* Atardecer más suave para resaltar el azul clarito */
+            background: linear-gradient(180deg, #FFB9A1 0%, #FFB3A1 40%, #FFE4B1 100%);
+            background-attachment: fixed; 
+            background-size: cover;
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            text-align: center;
+            margin: 0;
+            padding: 0;
+            overflow-x: hidden;
+            min-height: 100vh;
+            color: #333;
+        }
+
+        /* --- DETALLES EN AZUL CLARITO FAVORITO (#87CEFA y #ADD8E6) --- */
+
+        /* --- NUBES --- */
+        .sky {
+            position: fixed;
+            top: 0; left: 0;
+            width: 100%; height: 50%;
+            z-index: -2;
+            overflow: hidden;
+        }
+
+        .cloud {
+            position: absolute;
+            background: rgba(255, 250, 240, 0.8);
+            border-radius: 50px;
+            animation: floatClouds linear infinite;
+        }
+
+        .cloud::before, .cloud::after {
+            content: '';
+            position: absolute;
+            background: inherit;
+            border-radius: 50%;
+        }
+
+        .cloud-1 { width: 150px; height: 60px; top: 50px; left: -200px; animation-duration: 45s; }
+        .cloud-1::before { width: 80px; height: 80px; top: -40px; left: 20px; }
+        .cloud-1::after { width: 50px; height: 50px; top: -20px; left: 80px; }
+
+        .cloud-2 { width: 250px; height: 90px; top: 120px; left: -300px; animation-duration: 65s; opacity: 0.6; }
+        .cloud-2::before { width: 120px; height: 120px; top: -60px; left: 40px; }
+        .cloud-2::after { width: 70px; height: 70px; top: -30px; left: 140px; }
+
+        @keyframes floatClouds {
+            from { left: -300px; }
+            to { left: 110vw; }
+        }
+
+        /* --- OLA AZUL CELESTE (MANTENIDA Y RESALTADA) --- */
+        .ocean { 
+            width: 100%;
+            position: fixed;
+            bottom: 0;
+            left: 0;
+            height: 200px;
+            z-index: -1;
+            pointer-events: none;
+        }
+
+        .wave {
+            background: url(https://s3-us-west-2.amazonaws.com/s.cdpn.io/85486/wave.svg) repeat-x; 
+            position: absolute;
+            top: 0;
+            width: 6400px;
+            height: 198px;
+            animation: wave 12s cubic-bezier(0.36, 0.45, 0.63, 0.53) infinite;
+            filter: invert(58%) sepia(85%) saturate(350%) hue-rotate(165deg) brightness(1.2); /* Un toque más brillante */
+        }
+
+        .wave:nth-of-type(2) {
+            top: 10px;
+            animation: wave 12s cubic-bezier(0.36, 0.45, 0.63, 0.53) -.125s infinite, swell 12s ease -1.25s infinite;
+            opacity: 0.4;
+        }
+
+        @keyframes wave {
+            0% { margin-left: 0; }
+            100% { margin-left: -1600px; }
+        }
+
+        @keyframes swell {
+            0%, 100% { transform: translate3d(0, -15px, 0); }
+            50% { transform: translate3d(0, 5px, 0); }
+        }
+
+        /* --- CONTENIDO CON DETALLES AZULES --- */
+        .container {
+            position: relative;
+            z-index: 1;
+            padding: 40px 20px;
+            max-width: 750px;
+            margin: 50px auto 150px auto;
+            background: rgba(255, 255, 255, 0.5);
+            backdrop-filter: blur(12px);
+            border-radius: 30px;
+            box-shadow: 0 15px 35px rgba(0,0,0,0.05);
+            border: 3px solid rgba(135, 206, 250, 0.3); /* Borde sutil azul clarito */
+        }
+
+        .fotos-container {
+            display: flex;
+            justify-content: center;
+            flex-wrap: wrap;
+            gap: 20px;
+            margin: 30px 0;
+        }
+
+        img {
+            max-width: 260px;
+            height: auto;
+            border-radius: 15px;
+            box-shadow: 0 10px 20px rgba(0,0,0,0.1);
+            border: 5px solid #ADD8E6; /* Borde de la foto azul clarito */
+        }
+
+        h1 { color: #87CEFA; margin-bottom: 25px; } /* Título principal en azul clarito */
+
+        .mensaje { font-size: 1.1em; line-height: 1.8; color: #444; }
+
+        .corazon { color: #87CEFA; } /* Corazón en azul clarito */
+        .destacado { color: #87CEFA; font-weight: bold; } /* Texto destacado en azul clarito */
+
+        /* Pantalla de inicio con degradado azul clarito a atardecer */
+        #overlay {
+            position: fixed;
+            top: 0; left: 0; width: 100%; height: 100%;
+            background: linear-gradient(135deg, #ADD8E6 0%, #FFB9A1 100%); /* Degradado mixto */
+            z-index: 9999;
+            display: flex;
+            flex-direction: column;
+            justify-content: center;
+            align-items: center;
+            transition: 0.8s ease;
+        }
+
+        /* Botón de entrada azul clarito */
+        .btn-entrar {
+            padding: 15px 40px;
+            font-size: 20px;
+            cursor: pointer;
+            border-radius: 50px;
+            border: 2px solid white;
+            background: #87CEFA;
+            color: white;
+            font-weight: bold;
+            box-shadow: 0 10px 20px rgba(0,0,0,0.1);
+        }
+
+        .flower { position: fixed; top: -50px; z-index: 2; pointer-events: none; animation: fall linear forwards; }
+        @keyframes fall { to { transform: translateY(110vh) rotate(360deg); } }
+    </style>
+</head>
+<body>
+
+    <div id="overlay">
+        <h1 style="color: white; text-shadow: 1px 1px 2px rgba(0,0,0,0.2);">Tengo una sorpresa para ti...</h1>
+        <button class="btn-entrar" onclick="empezarSorpresa()">Abrir Regalo 🎁</button>
+    </div>
+
+    <div class="sky">
+        <div class="cloud cloud-1"></div>
+        <div class="cloud cloud-2"></div>
+    </div>
+
+    <div class="ocean">
+        <div class="wave"></div>
+        <div class="wave"></div>
+    </div>
+
+    <audio id="musica" loop>
+        <source src="rola.mp3" type="audio/mpeg">
+    </audio>
+
+    <div class="container">
+        <h1>¡Feliz Cumpleaños, Mi Flaquita Hermosa!</h1>
+        
+        <p class="mensaje">
+            Hoy es un día muy especial porque celebramos tu cumpleaños, mi amor. Eres la luz de mi vida y cada momento contigo es un regalo. Espero que este día esté lleno de alegría, amor y sorpresas maravillosas. Te amo con todo mi corazón y deseo que todos tus sueños se hagan realidad. ¡Feliz cumpleaños, mi hermosa flaquita! 🎉🎂<span class="corazon">💖</span>
+        </p>
+
+        <div class="fotos-container">
+            <img src="abi1.jpeg" alt="Foto 1">
+            <img src="abi2.jpeg" alt="Foto 2">
+        </div>
+
+        <p class="mensaje">
+            <strong>Hoy como siempre te lo digo <span class="destacado">TE AMO</span> <span class="corazon">🩵</span></strong>
+        </p>
+
+        <p class="mensaje">
+            Quiero que sepas que a pesar de cada problema, discusión y pelea siempre hay una solución y así al final del día seguimos siendo nosotros, una linda relación que a pesar de todo seguimos juntos. Nuestro mayor detalle no es la distancia sino la conexión, la amistad y la comprensión. 
+            <br><br>
+            La distancia que nos separa no es un obstáculo sino una oportunidad para conectarnos y aprender que sin tocarnos, vernos e incluso sentirnos nos amamos intensamente. Al final esa distancia no es más que un número, no nos impide amarnos, al contrario nos hace más fuertes y más unidos. 
+            <br><br>
+            Te amo con todo mi corazón y espero que este día sea tan especial como tú lo eres para mí. 
+            <br>
+            <strong>Feliz cumpleaños mi flaquita hermosa, te amo mucho <span class="corazon">🩵</span>🎉🎂</strong>
+        </p>
+    </div>
+
+    <script>
+        function empezarSorpresa() {
+            const audio = document.getElementById('musica');
+            audio.play().catch(e => console.log("Audio play error:", e));
+            const overlay = document.getElementById('overlay');
+            overlay.style.opacity = '0';
+            setTimeout(() => overlay.style.display = 'none', 800);
+        }
+
+        function crearFlor() {
+            const flores = ['🌸', '🌺', '🌼', '🌻', '🌷', '🌹'];
+            const flor = document.createElement('div');
+            flor.classList.add('flower');
+            flor.innerText = flores[Math.floor(Math.random() * flores.length)];
+            flor.style.left = Math.random() * 100 + "vw";
+            flor.style.animationDuration = Math.random() * 3 + 5 + "s";
+            flor.style.fontSize = Math.random() * 10 + 20 + "px";
+            document.body.appendChild(flor);
+            setTimeout(() => flor.remove(), 8000);
+        }
+        setInterval(crearFlor, 400);
+    </script>
+</body>
+</html>
