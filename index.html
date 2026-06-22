@@ -21,13 +21,24 @@
 
         /* --- DETALLES EN AZUL CLARITO FAVORITO (#87CEFA y #ADD8E6) --- */
 
-        /* --- NUBES --- */
+        /* --- NUBES VISUALES (EN EL FONDO, DETRÁS DEL TEXTO) --- */
         .sky {
             position: fixed;
             top: 0; left: 0;
             width: 100%; height: 50%;
-            z-index: -2;
+            z-index: -2; 
             overflow: hidden;
+            pointer-events: none;
+        }
+
+        /* --- CAPA INVISIBLE AL FRENTE SOLO PARA DETECTAR CLICS --- */
+        .sky-click-layer {
+            position: fixed;
+            top: 0; left: 0;
+            width: 100%; height: 50%;
+            z-index: 3; /* Al frente de todo, por encima del texto */
+            overflow: hidden;
+            pointer-events: none;
         }
 
         .cloud {
@@ -37,18 +48,30 @@
             animation: floatClouds linear infinite;
         }
 
-        .cloud::before, .cloud::after {
+        /* Las nubes invisibles del frente que reciben el toque */
+        .cloud-click-target {
+            position: absolute;
+            border-radius: 50px;
+            animation: floatClouds linear infinite;
+            cursor: pointer;
+            pointer-events: auto; /* Permite clics */
+            background: transparent !important; /* Totalmente invisibles */
+        }
+
+        .cloud::before, .cloud::after, .cloud-click-target::before, .cloud-click-target::after {
             content: '';
             position: absolute;
             background: inherit;
             border-radius: 50%;
         }
 
+        /* Dimensiones exactas sincronizadas para ambas capas */
         .cloud-1 { width: 150px; height: 60px; top: 50px; left: -200px; animation-duration: 45s; }
         .cloud-1::before { width: 80px; height: 80px; top: -40px; left: 20px; }
         .cloud-1::after { width: 50px; height: 50px; top: -20px; left: 80px; }
 
-        .cloud-2 { width: 250px; height: 90px; top: 120px; left: -300px; animation-duration: 65s; opacity: 0.6; }
+        .cloud-2 { width: 250px; height: 90px; top: 120px; left: -300px; animation-duration: 65s; }
+        .cloud-2-visual { opacity: 0.6; } /* Solo la nube de fondo es semitransparente */
         .cloud-2::before { width: 120px; height: 120px; top: -60px; left: 40px; }
         .cloud-2::after { width: 70px; height: 70px; top: -30px; left: 140px; }
 
@@ -75,7 +98,7 @@
             width: 6400px;
             height: 198px;
             animation: wave 12s cubic-bezier(0.36, 0.45, 0.63, 0.53) infinite;
-            filter: invert(58%) sepia(85%) saturate(350%) hue-rotate(165deg) brightness(1.2); /* Un toque más brillante */
+            filter: invert(58%) sepia(85%) saturate(350%) hue-rotate(165deg) brightness(1.2); 
         }
 
         .wave:nth-of-type(2) {
@@ -105,7 +128,7 @@
             backdrop-filter: blur(12px);
             border-radius: 30px;
             box-shadow: 0 15px 35px rgba(0,0,0,0.05);
-            border: 3px solid rgba(135, 206, 250, 0.3); /* Borde sutil azul clarito */
+            border: 3px solid rgba(135, 206, 250, 0.3);
         }
 
         .fotos-container {
@@ -121,21 +144,21 @@
             height: auto;
             border-radius: 15px;
             box-shadow: 0 10px 20px rgba(0,0,0,0.1);
-            border: 5px solid #ADD8E6; /* Borde de la foto azul clarito */
+            border: 5px solid #ADD8E6; 
         }
 
-        h1 { color: #87CEFA; margin-bottom: 25px; } /* Título principal en azul clarito */
+        h1 { color: #87CEFA; margin-bottom: 25px; } 
 
         .mensaje { font-size: 1.1em; line-height: 1.8; color: #444; }
 
-        .corazon { color: #87CEFA; } /* Corazón en azul clarito */
-        .destacado { color: #87CEFA; font-weight: bold; } /* Texto destacado en azul clarito */
+        .corazon { color: #87CEFA; } 
+        .destacado { color: #87CEFA; font-weight: bold; } 
 
         /* Pantalla de inicio con degradado azul clarito a atardecer */
         #overlay {
             position: fixed;
             top: 0; left: 0; width: 100%; height: 100%;
-            background: linear-gradient(135deg, #ADD8E6 0%, #FFB9A1 100%); /* Degradado mixto */
+            background: linear-gradient(135deg, #ADD8E6 0%, #FFB9A1 100%); 
             z-index: 9999;
             display: flex;
             flex-direction: column;
@@ -157,8 +180,34 @@
             box-shadow: 0 10px 20px rgba(0,0,0,0.1);
         }
 
-        .flower { position: fixed; top: -50px; z-index: 2; pointer-events: none; animation: fall linear forwards; }
+        .flower { position: fixed; top: -50px; z-index: 4; pointer-events: none; animation: fall linear forwards; }
         @keyframes fall { to { transform: translateY(110vh) rotate(360deg); } }
+
+        /* Estilos agregados para el botón invisible y el texto secreto */
+        .btn-invisible {
+            background: transparent;
+            border: none;
+            padding: 0;
+            font: inherit;
+            color: inherit;
+            cursor: pointer;
+            outline: none;
+        }
+        .texto-oculto {
+            max-height: 0;
+            opacity: 0;
+            overflow: hidden;
+            transition: max-height 0.8s ease-out, opacity 0.8s ease-out;
+            margin-top: 20px;
+            padding: 10px;
+            border-left: 3px solid #87CEFA;
+            background: rgba(255, 255, 255, 0.3);
+            border-radius: 0 15px 15px 0;
+        }
+        .texto-oculto.mostrar {
+            max-height: 500px;
+            opacity: 1;
+        }
     </style>
 </head>
 <body>
@@ -168,9 +217,16 @@
         <button class="btn-entrar" onclick="empezarSorpresa()">Abrir Regalo 🎁</button>
     </div>
 
+    <!-- Nubes visuales en el fondo -->
     <div class="sky">
         <div class="cloud cloud-1"></div>
-        <div class="cloud cloud-2"></div>
+        <div class="cloud cloud-2 cloud-2-visual"></div>
+    </div>
+
+    <!-- Nubes invisibles al frente para los toques -->
+    <div class="sky-click-layer">
+        <div class="cloud-click-target cloud-1" onclick="revelarSecretoNube()"></div>
+        <div class="cloud-click-target cloud-2" onclick="revelarSecretoNube()"></div>
     </div>
 
     <div class="ocean">
@@ -205,8 +261,28 @@
             <br><br>
             Te amo con todo mi corazón y espero que este día sea tan especial como tú lo eres para mí. 
             <br>
-            <strong>Feliz cumpleaños mi flaquita hermosa, te amo mucho <span class="corazon">🩵</span>🎉🎂</strong>
+            <strong>Feliz cumpleaños mi flaquita hermosa, te amo mucho <button class="btn-invisible" onclick="revelarSecreto()"><span class="corazon">🩵</span></button>🎉🎂</strong>
         </p>
+
+        <!-- Contenedor del primer texto oculto (el del corazón) con tu mensaje corregido y actualizado -->
+        <div id="secreto" class="texto-oculto">
+            <p class="mensaje" style="font-style: italic; text-align: center;">
+                <strong>Feliz cumpleaños, mi flaquita hermosa. 🩵</strong><br>
+                Aunque la distancia nos separe hoy, este corazón azul guarda todo el amor que te tengo. Lo elegí porque sé que es tu color favorito y porque, no importa cuántos kilómetros haya en medio, mi corazón siempre late por ti. Que pases un día increíble, te amo. 🩵
+                <br><br>
+                Mi niña, yo de verdad quiero seguir a tu lado, pero tampoco quiero presionarte para que intentemos algo de nuevo. Sé que es probable que yo mismo causara que lo nuestro encontrara el colapso; por fin entendí que mi falta de atención hacia nuestra relación y hacia ti causó que te cansaras y que te acostumbraras a mi ausencia. Quiero pedirte perdón por todo el tiempo que no estuve contigo y que te hice sentir sola; yo de verdad te amo y quisiera poder estar a tu lado. Quiero saber si en verdad tengo oportunidad, si no, en serio házmelo saber; no me importa si es de una forma que me rompa el corazón, no quiero estar abrumándote con mi presencia. Igual nunca olvides que te amo desde el fondo de mi corazón.
+            </p>
+        </div>
+
+        <!-- Contenedor del segundo texto oculto (el de las nubes) -->
+        <div id="secreto-nube" class="texto-oculto">
+            <p class="mensaje" style="font-style: italic; text-align: center;">
+                <strong>Mirando al cielo... ☁️✨</strong><br>
+                Hoy miramos el mismo cielo desde la distancia, separados por los kilómetros pero unidos por las mismas nubes. Pero sé que muy pronto dejaremos de contar los días, y por fin veremos el mismo cielo... pero sin distancia. Feliz cumpleaños mi flaquita hermosa 🩵.
+                <br><br>
+                Sé que ya no estamos juntos, y que ya no somos nada, sin embargo, nunca he dejado de amarte, y que estos días que hemos estado con un contacto mínimo me tiene muy mal, sé que es muy improbable regresar, pero sigo con la esperanza de que suceda. No olvides que te amo y sobre todo te extraño mi niña. 🩵
+            </p>
+        </div>
     </div>
 
     <script>
@@ -230,6 +306,18 @@
             setTimeout(() => flor.remove(), 8000);
         }
         setInterval(crearFlor, 200);
+
+        // Función para mostrar/ocultar el texto secreto al pulsar el corazón
+        function revelarSecreto() {
+            const elementoSecreto = document.getElementById('secreto');
+            elementoSecreto.classList.toggle('mostrar');
+        }
+
+        // Función para mostrar/ocultar el texto secreto al pulsar las nubes
+        function revelarSecretoNube() {
+            const elementoSecretoNube = document.getElementById('secreto-nube');
+            elementoSecretoNube.classList.toggle('mostrar');
+        }
     </script>
 </body>
 </html>
